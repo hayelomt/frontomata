@@ -8,8 +8,6 @@ const useSorting = (modelToken: string) => {
   const [sortOp, setSortOp] = useState<SortOp>(savedSort.sortOp);
 
   const handleSort = (field: string) => {
-    // Trigger api fetch
-    // Save sort state to localStorage
     let orderOp: SortOp = 'asc';
 
     if (sortField === field) {

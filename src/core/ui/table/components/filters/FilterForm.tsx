@@ -6,7 +6,7 @@ import {
   Box,
   TextField,
 } from '@mui/material';
-import DateSelector from '../../core/ui/utility/DateSelector';
+import DateSelector from '../../../utility/DateSelector';
 import { fieldFilterMap, FieldType, FilterOp } from './filterTypes';
 
 type FilterFormProps = {

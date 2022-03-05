@@ -6,6 +6,7 @@ const constants = {
   prefixes: {
     sorting: 'sorting',
     visibility: 'visibility',
+    density: 'density',
   },
 };
 

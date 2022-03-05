@@ -21,7 +21,7 @@ type TableSettingsProps = {
   fieldVisible: Record<string, boolean>;
   toggleFieldVisibility: (field: string) => void;
   tableDense: boolean;
-  toggleTableDensity: (field: boolean) => void;
+  toggleTableDensity: () => void;
 };
 
 const TableSettings: React.FC<TableSettingsProps> = ({
@@ -114,7 +114,7 @@ const TableSettings: React.FC<TableSettingsProps> = ({
           control={
             <Switch
               checked={tableDense}
-              onChange={(e) => toggleTableDensity(e.target.checked)}
+              onChange={(e) => toggleTableDensity()}
               size="small"
             />
           }

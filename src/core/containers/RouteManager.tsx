@@ -6,7 +6,6 @@ import PrivateRoute from '../../features/auth/containers/PrivateRoute';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import ProfilePage from '../../features/auth/pages/ProfilePage';
 import Home from '../../features/Home';
-import HomeForm from '../../features/HomeForm';
 import CreateBlogPage from '../../features/blog/pages/CreateBlogPage';
 
 const RouteManager = () => {

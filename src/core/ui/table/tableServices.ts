@@ -50,6 +50,16 @@ const tableServices = {
 
     return saved || defaultSort;
   },
+
+  saveDensity: (modelToken: string, dense: boolean) => {
+    storage.saveItem(`${constants.prefixes.density}_${modelToken}`, dense);
+  },
+
+  getDensity: (modelToken: string): boolean => {
+    return (
+      storage.getItem(`${constants.prefixes.density}_${modelToken}`) || false
+    );
+  },
 };
 
 export default tableServices;

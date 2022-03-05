@@ -2,9 +2,7 @@ import { Box } from '@mui/material';
 import Layout from '../core/ui/layout/Layout';
 import TableContainer from '../core/ui/table/TableContainer';
 import { TableHeader } from '../core/ui/table/tableTypes';
-import DateSelector from '../core/ui/utility/DateSelector';
 import { Model } from '../core/utils/types';
-import Filter from './filters/Filter';
 
 function createData(
   id: number,
@@ -48,8 +46,7 @@ const Home = () => {
     <>
       <Layout renderLeftToolbar={() => <div>Hello</div>}>
         <Box sx={{ p: 2 }}>
-          <Filter label="Blogs" />
-          {/* <TableContainer
+          <TableContainer
             modelToken="home"
             tableHeaders={tableHeaders}
             data={rows}
@@ -60,7 +57,7 @@ const Home = () => {
               onFetchData: handleFetchData,
               onDelete: handleDelete,
             }}
-          /> */}
+          />
         </Box>
       </Layout>
     </>

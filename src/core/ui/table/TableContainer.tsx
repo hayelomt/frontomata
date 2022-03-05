@@ -3,7 +3,7 @@ import GenericTable from './components/GenericTable';
 import { TableHeader } from './tableTypes';
 import DeleteAction from '../utility/DeleteAction';
 import GenericTableFooter from './components/GenericTableFooter';
-import FilterBlock from './components/FilterBlock';
+import FilterBlock from './components/filters/FilterBlock';
 import useSorting from './hooks/useSorting';
 import useFieldVisibility from './hooks/useFieldVisibility';
 import useChecklist from './hooks/useChecklist';
@@ -13,23 +13,24 @@ import { Model } from '../../../core/utils/types';
 import { Edit } from '@mui/icons-material';
 import SummaryBlock from './components/SummaryBlock';
 import { Grid } from '@mui/material';
+import useDensity from './hooks/useDensity';
 
-type GenericTableActions = {
+type TableActions = {
   onFetchData: (cb: (c: number) => void) => Promise<void>;
   onDelete: (m: Model) => Promise<void>;
 };
 
-type GenericTableContainerProps = {
+type TableContainerProps = {
   modelToken: string;
   data: Record<string, any>[];
   tableHeaders: TableHeader[];
   editRoutePrefix: string;
   addRoute: string;
   modelLabel: string;
-  actions: GenericTableActions;
+  actions: TableActions;
 };
 
-const GenericTableContainer = ({
+const TableContainer = ({
   modelToken,
   tableHeaders,
   data,
@@ -37,9 +38,9 @@ const GenericTableContainer = ({
   addRoute,
   modelLabel,
   actions: { onFetchData, onDelete },
-}: GenericTableContainerProps) => {
+}: TableContainerProps) => {
   const [loading, setLoading] = useState(false);
-  const [tableDense, setTableDense] = useState(false);
+  const { dense, toggleDensity } = useDensity(modelToken);
   const {
     data: { page, rowsPerPage, total },
     handlers: { handleChangePage, handleChangeRowsPerPage },
@@ -75,7 +76,7 @@ const GenericTableContainer = ({
         tableHeaders={filteredHeaders}
         checklist={checklist}
         toggleChecklist={toggleChecklist}
-        size={tableDense ? 'small' : 'medium'}
+        size={dense ? 'small' : 'medium'}
         sorting={{
           orderBy: sortField,
           orderOp: sortOp,
@@ -92,11 +93,13 @@ const GenericTableContainer = ({
         )}
         renderFilterBlock={() => (
           <FilterBlock
+            modelName={modelLabel}
             tableHeaders={tableHeaders}
             fieldVisible={fieldVisible}
             toggleFieldVisibility={handleToggleFieldVisibility}
-            tableDense={tableDense}
-            toggleTableDensity={setTableDense}
+            tableDense={dense}
+            toggleTableDensity={toggleDensity}
+            onFilterApply={() => console.log('filter')}
           />
         )}
         renderFooter={() => (
@@ -131,4 +134,4 @@ const GenericTableContainer = ({
   );
 };
 
-export default GenericTableContainer;
+export default TableContainer;

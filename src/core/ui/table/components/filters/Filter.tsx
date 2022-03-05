@@ -5,9 +5,11 @@ import { fieldFilterMap, FieldType, FilterSelection } from './filterTypes';
 
 type FilterProps = {
   label: string;
+  onClear: () => void;
+  onApply: (filter: any) => void;
 };
 
-const Filter = ({ label }: FilterProps) => {
+const Filter = ({ label, onClear, onApply }: FilterProps) => {
   const fieldMap: Record<string, FieldType> = {
     age: 'number',
     name: 'string',
@@ -24,14 +26,6 @@ const Filter = ({ label }: FilterProps) => {
     },
   ]);
 
-  const onClear = () => {
-    console.log('clear');
-  };
-
-  const onApply = () => {
-    console.log('apply');
-  };
-
   return (
     <>
       <Box
@@ -39,6 +33,7 @@ const Filter = ({ label }: FilterProps) => {
           py: 1,
           px: 1,
           pb: 3,
+          mt: 1,
           border: '1px solid',
           borderColor: 'grey.300',
           borderRadius: '5px',
@@ -74,7 +69,7 @@ const Filter = ({ label }: FilterProps) => {
                 px: 5,
               }}
               color="primary"
-              onClick={onApply}
+              onClick={() => onApply(filterFields)}
             >
               Apply
             </Button>
