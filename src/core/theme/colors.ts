@@ -1,0 +1,10 @@
+export const PrimaryColor = '#b33150';
+export const PrimaryDarkHover = '#b33170';
+export const SecondaryColor = '#003399';
+export const BackgroundColor = '#fcfcfc';
+export const LighterBackground = '#fdfdfd';
+export const PaperColor = '#fff';
+export const InactiveColor = '#d2d2d2';
+export const LightInactiveColor = '#dfdfdf';
+export const LightText = '#b0b0b0';
+export const DarkText = '#000';
