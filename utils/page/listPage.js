@@ -4,27 +4,27 @@ const { writeImports } = require('../common-utils');
 
 const getImportMap = (modelName, corePrefix) => {
   return {
-    [`../containers/Create${modelName}Container`]: `Create${modelName}Container`,
+    [`../components/${modelName}List`]: `${modelName}List`,
   };
 };
 
 const generatePage = (modelName) => {
-  return `const Create${modelName}Page = () => {
+  return `const List${modelName}Page = () => {
   return (
-    <Create${modelName}Container />
+    <${modelName}List />
   );
 };
 
-export default Create${modelName}Page;
+export default List${modelName}Page;
 `;
 };
 
-exports.writeCreatePage = ({ modelName, corePrefix, baseOutputFolder }) => {
+exports.writeListPage = ({ modelName, corePrefix, baseOutputFolder }) => {
   let output = writeImports(getImportMap(modelName, corePrefix)) + '\n';
   output += generatePage(modelName);
 
   fs.writeFileSync(
-    path.join(baseOutputFolder, 'pages', `Create${modelName}Page.tsx`),
+    path.join(baseOutputFolder, 'pages', `List${modelName}Page.tsx`),
     output
   );
 };

@@ -5,6 +5,7 @@ const {
   generateModelCreateType,
   generateModelType,
   generateModelImports,
+  generateModelEditType,
 } = require('./model');
 const { writeImports } = require('../common-utils');
 
@@ -15,7 +16,8 @@ exports.writeModel = (
   let output = writeImports(generateModelImports(corePrefix)) + '\n';
 
   output += generateModelType(modelName, data) + '\n\n';
-  output += generateModelCreateType(modelName, data);
+  output += generateModelCreateType(modelName, data) + '\n';
+  output += generateModelEditType(modelName, data);
 
   // console.dir(output);
   const modelFile = camelCase(modelName);

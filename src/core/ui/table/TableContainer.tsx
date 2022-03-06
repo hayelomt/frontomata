@@ -16,7 +16,7 @@ import { Grid } from '@mui/material';
 import useDensity from './hooks/useDensity';
 
 type TableActions = {
-  onFetchData: (cb: (c: number) => void) => Promise<void>;
+  onFetchData: (query: any, cb: (c: number) => void) => Promise<void>;
   onDelete: (m: Model) => Promise<void>;
 };
 
@@ -40,11 +40,12 @@ const TableContainer = ({
   actions: { onFetchData, onDelete },
 }: TableContainerProps) => {
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState<Record<string, any>>({});
   const { dense, toggleDensity } = useDensity(modelToken);
   const {
     data: { page, rowsPerPage, total },
-    handlers: { handleChangePage, handleChangeRowsPerPage },
-  } = useTablePagination();
+    handlers: { handleChangePage, handleChangeRowsPerPage, setTotal },
+  } = useTablePagination(modelToken);
   const { sortField, sortOp, handleSort } = useSorting(modelToken);
   const { fieldVisible, handleToggleFieldVisibility } = useFieldVisibility(
     modelToken,
@@ -55,15 +56,23 @@ const TableContainer = ({
   useEffect(() => {
     setLoading(true);
     (async () => {
-      await onFetchData((total) => {
-        // setTotal(total)
-        console.log('set total');
-      });
+      await onFetchData(
+        {
+          page: page + 1,
+          rowsPerPage,
+          sortField,
+          sortOp,
+          filter,
+        },
+        (t) => {
+          setTotal(t);
+        }
+      );
 
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, sortField, sortOp]);
+  }, [page, rowsPerPage, sortField, sortOp, filter]);
 
   const filteredHeaders = tableHeaders.filter(
     (header) => fieldVisible[header.field]
@@ -99,7 +108,10 @@ const TableContainer = ({
             toggleFieldVisibility={handleToggleFieldVisibility}
             tableDense={dense}
             toggleTableDensity={toggleDensity}
-            onFilterApply={() => console.log('filter')}
+            onFilterApply={(filter) => {
+              setFilter(filter);
+              console.log('apply filter');
+            }}
           />
         )}
         renderFooter={() => (

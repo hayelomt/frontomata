@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import tableServices from '../tableServices';
 
-const useTablePagination = () => {
+const useTablePagination = (modelToken: string) => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    tableServices.getRowsPerPage(modelToken)
+  );
   const [total, setTotal] = useState(90);
 
   const handleChangePage = (
@@ -15,6 +18,7 @@ const useTablePagination = () => {
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    tableServices.saveRowsPerPage(modelToken, parseInt(event.target.value, 10));
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

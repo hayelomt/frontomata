@@ -15,7 +15,7 @@ exports.mergeImports = (combinedMap, mapItem) => {
   });
 };
 
-exports.writeImports = (importMap) => {
+const writeImports = (importMap) => {
   let output = '';
   Object.entries(importMap).forEach(([key, value]) => {
     // console.log(value, Array.isArray(value));
@@ -29,6 +29,8 @@ exports.writeImports = (importMap) => {
 
   return output;
 };
+
+exports.writeImports = writeImports;
 
 exports.generateFolders = ({ modelName, srcPath, folderPrefix = '' }) => {
   const folderName = camelCase(modelName);
@@ -79,4 +81,64 @@ exports.getDateFields = (data) => {
   });
 
   return fields;
+};
+
+exports.generateRouteManagerOutputs = (
+  settings,
+  { folderPrefix, modelName, endpoint }
+) => {
+  let importFolder = '../../features/';
+  if (folderPrefix) {
+    importFolder += `${folderPrefix}/`;
+  }
+
+  const imports = writeImports({
+    [`${importFolder}${camelCase(
+      modelName
+    )}/pages/Create${modelName}Page`]: `Create${modelName}Page`,
+    [`${importFolder}${camelCase(
+      modelName
+    )}/pages/Edit${modelName}Page`]: `Edit${modelName}Page`,
+    [`${importFolder}${camelCase(
+      modelName
+    )}/pages/List${modelName}Page`]: `List${modelName}Page`,
+  });
+
+  const routes = `
+<Route
+  path="${endpoint}"
+  element={
+    <PrivateRoute>
+      <List${modelName}Page />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="${endpoint}/create"
+  element={
+    <PrivateRoute>
+      <Create${modelName}Page />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="${endpoint}/edit/:id"
+  element={
+    <PrivateRoute>
+      <Edit${modelName}Page />
+    </PrivateRoute>
+  }
+/>
+  `;
+
+  console.log(
+    'Copy to src/core/containers/RouteManager\n\n',
+    imports,
+    '\n',
+    routes
+  );
+
+  const sidebar = `<SidebarLink to="${endpoint}" label="${modelName}" />`;
+
+  console.log('Copy to src/core/ui/layout/components/Sidebar\n\n', sidebar);
 };

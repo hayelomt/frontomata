@@ -60,6 +60,19 @@ const tableServices = {
       storage.getItem(`${constants.prefixes.density}_${modelToken}`) || false
     );
   },
+
+  saveRowsPerPage: (modelToken: string, rowsPerPage: number) => {
+    storage.saveItem(
+      `${constants.prefixes.rowsPerPage}_${modelToken}`,
+      rowsPerPage
+    );
+  },
+
+  getRowsPerPage: (modelToken: string): number => {
+    return (
+      storage.getItem(`${constants.prefixes.rowsPerPage}_${modelToken}`) || 10
+    );
+  },
 };
 
 export default tableServices;

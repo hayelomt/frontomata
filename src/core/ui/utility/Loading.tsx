@@ -2,6 +2,14 @@ import { Sync } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 
+export const Spinner = () => (
+  <Sync
+    style={{ animation: 'spinner infinite 2s linear' }}
+    fontSize="large"
+    color="primary"
+  />
+);
+
 const Loading = () => {
   return (
     <>
@@ -16,11 +24,7 @@ const Loading = () => {
           justifyContent="center"
           alignItems="center"
         >
-          <Sync
-            style={{ animation: 'spinner infinite 2s linear' }}
-            fontSize="large"
-            color="primary"
-          />
+          <Spinner />
         </Grid>
       </Box>
     </>

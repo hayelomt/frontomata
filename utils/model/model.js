@@ -9,13 +9,16 @@ const getType = (type, subtype) => {
   return 'string';
 };
 
-const generateBaseFields = (data) => {
+const generateBaseFields = (data, { edit } = { edit: false }) => {
   let template = '';
 
   data.forEach((row) => {
     row.forEach(({ name, type, subtype }) => {
       if (type !== 'placeholder') {
-        template += `${tab}${name}: ${getType(type, subtype)};\n`;
+        template += `${tab}${name}${edit ? '?' : ''}: ${getType(
+          type,
+          subtype
+        )};\n`;
       }
     });
   });
@@ -40,6 +43,14 @@ exports.generateModelType = (modelName, data) => {
 exports.generateModelCreateType = (modelName, data) => {
   let inputTemplate = `export type ${modelName}Create = {\n`;
   inputTemplate += generateBaseFields(data);
+  inputTemplate += '}';
+
+  return inputTemplate;
+};
+
+exports.generateModelEditType = (modelName, data) => {
+  let inputTemplate = `export type ${modelName}Edit = {\n`;
+  inputTemplate += generateBaseFields(data, { edit: true });
   inputTemplate += '}';
 
   return inputTemplate;

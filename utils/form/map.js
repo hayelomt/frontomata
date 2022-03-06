@@ -5,7 +5,7 @@ const { generateSelect } = require('./select');
 const { generateRadio } = require('./radio');
 const { generateFile } = require('./file');
 const { generateDate } = require('./date');
-const { generatePlaceholder } = require('./form-utils');
+const { generatePlaceholder } = require('./formUtils');
 
 exports.importMap = {
   text: {

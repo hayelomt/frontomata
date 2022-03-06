@@ -34,25 +34,28 @@ const FilterBlock = ({
         justifyContent="space-between"
         alignItems="flex-end"
       >
-        <Grid
-          item
-          display="flex"
-          alignItems="center"
-          sx={{
-            border: '1px solid',
-            borderColor: 'grey.400',
-            cursor: 'pointer',
-            px: 1,
-            borderRadius: '4px',
-          }}
-          onClick={() => {
-            setShowFilter(!showFilter);
-            onFilterApply({});
-          }}
-        >
-          <FilterList sx={{ mr: 1, fontSize: '12px' }} />
-          <Typography sx={{ fontSize: '14px' }}>Filters</Typography>
-        </Grid>
+        {!showFilter ? (
+          <Grid
+            item
+            display="flex"
+            alignItems="center"
+            sx={{
+              border: '1px solid',
+              borderColor: 'grey.400',
+              cursor: 'pointer',
+              px: 1,
+              borderRadius: '4px',
+            }}
+            onClick={() => {
+              setShowFilter(true);
+            }}
+          >
+            <FilterList sx={{ mr: 1, fontSize: '12px' }} />
+            <Typography sx={{ fontSize: '14px' }}>Filters</Typography>
+          </Grid>
+        ) : (
+          <Box></Box>
+        )}
         <Grid item>
           <TableSettings
             tableHeaders={tableHeaders}

@@ -1,4 +1,4 @@
-const { genValue } = require('./form-utils');
+const { genValue } = require('./formUtils');
 
 exports.generateRadio = ({ flexGrow, name, label, options }) => {
   const genRadioOptions = () =>

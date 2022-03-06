@@ -11,13 +11,16 @@ const getContainerImports = (modelName, corePrefix) => {
   return {
     '@mui/material': ['Grid', 'Typography'],
     formik: ['FormikHelpers'],
-    'react-router-dom': ['useNavigate'],
+    'react-router-dom': ['useParams'],
+    react: ['useState', 'useEffect'],
     [`${corePrefix}/../core/components/layout/Layout`]: 'Layout',
     [`${corePrefix}/../core/hooks/useSendApiData`]: ['useSendApiData'],
     [`${corePrefix}/../core/utils/ui/alert`]: ['toastError', 'toastMessage'],
     [`${corePrefix}/../core/utils/validation`]: ['parseValidationErrors'],
-    [`../${camelCase(modelName)}`]: [`${modelName}Create`],
-    [`../components/Create${modelName}Form`]: `Create${modelName}Form`,
+    [`${corePrefix}/../core/hooks/useFetchApiData`]: 'useFetchApiData',
+    [`${corePrefix}/../core/components/utility/Loading`]: 'Loading',
+    [`../${camelCase(modelName)}`]: [`${modelName}Edit`, modelName],
+    [`../components/Edit${modelName}Form`]: `Edit${modelName}Form`,
   };
 };
 
@@ -54,20 +57,44 @@ const mapInputData = (templateData) => {
 };
 
 const generateContainer = ({ data, modelName, endpoint }) => {
-  return `const Create${modelName}Container = () => {
-  const navigate = useNavigate();
+  // eslint-disable-next-line no-template-curly-in-string
+  const id = '${id}';
+  const baseEndpoint = `${endpoint}/${id}`;
+  const patchEndpoint = containsFile(data)
+    ? `${baseEndpoint}?_method=PATCH`
+    : baseEndpoint;
+  const method = containsFile(data) ? 'post' : 'patch';
+  const modelInstance = camelCase(modelName);
+
+  return `const Edit${modelName}Container = () => {
+  const { id } = useParams();
   const { callApi, loading: submitting } = useSendApiData();
+  const { fetchData, loading } = useFetchApiData();
+  const [${modelInstance}, set${modelName}] = useState<${modelName} | null>(null);
+
+  const fetch${modelName} = () =>
+    fetchData(\`${baseEndpoint}\`, {
+      onSuccess: (data: ${modelName}) => {
+        set${modelName}(data);
+      },
+    });
+
+  useEffect(() => {
+    fetch${modelName}();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (
-    values: ${modelName}Create,
-    { setFieldError }: FormikHelpers<${modelName}Create>
+    values: ${modelName}Edit,
+    { setFieldError }: FormikHelpers<${modelName}Edit>
   ) => {
     let success = false;
 
     ${mapInputData(data)}
 
     await callApi({
-      endpoint: '${endpoint}',
+      endpoint: \`${patchEndpoint}\`,
+      method: '${method}',
       data: formData,
       headers: {
         'Content-Type': '${
@@ -77,15 +104,16 @@ const generateContainer = ({ data, modelName, endpoint }) => {
       onValidationError: (err) => parseValidationErrors(err, setFieldError),
       onError: toastError,
       onSuccess: async (_) => {
-        toastMessage('${modelName} Created');
+        await fetch${modelName};
+        toastMessage('${modelName} Edited');
         success = true;
       },
     });
 
-    if (success) navigate('/testimonies', { replace: true });
-
     return success;
   };
+
+  if (loading || !${modelInstance}) return <Loading />;
 
   return (
     <Layout>
@@ -93,17 +121,17 @@ const generateContainer = ({ data, modelName, endpoint }) => {
         <Grid container sx={{ mb: 1, px: 1 }}>
           <Typography variant="h5">Add ${modelName}</Typography>
         </Grid>
-        <Create${modelName}Form onSubmit={handleSubmit} submitting={submitting} />
+        <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
       </>
     </Layout>
   );
 };
 
-export default Create${modelName}Container;
+export default Edit${modelName}Container;
 `;
 };
 
-exports.writeCreateContainer = ({
+exports.writeEditContainer = ({
   data,
   modelName,
   endpoint,
@@ -114,11 +142,7 @@ exports.writeCreateContainer = ({
   output += generateContainer({ data, modelName, endpoint });
 
   fs.writeFileSync(
-    path.join(
-      baseOutputFolder,
-      'containers',
-      `Create${modelName}Container.tsx`
-    ),
+    path.join(baseOutputFolder, 'containers', `Edit${modelName}Container.tsx`),
     output
   );
 };

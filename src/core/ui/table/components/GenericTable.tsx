@@ -11,11 +11,12 @@ import {
   TableContainer,
   TableRow,
   Paper,
+  Grid,
 } from '@mui/material';
 import { TableHeader, TableSorting } from '../tableTypes';
-import Loader from '../../utility/Loader';
 import { Delete } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
+import { Spinner } from '../../utility/Loading';
 
 type GenericTableArgs = {
   data: Record<string, any>[];
@@ -48,85 +49,87 @@ const GenericTable = ({
 
   onMultiDelete,
 }: GenericTableArgs) => {
-  // Avoid a layout jump when reaching the last page with empty rows.
-  // const emptyRows =
-  //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - total) : 0;
-  // console.log(data, tableHeaders);
   const selectCount = Object.values(checklist).length;
 
   return (
     <Box>
       {renderSummary()}
       {renderFilterBlock()}
-      <Loader loading={loading}>
-        <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
-          {selectCount ? (
-            <>
-              <Typography variant="body1" sx={{ mr: 1, ml: 2 }} fontSize="13px">
-                {selectCount} Entr{selectCount === 1 ? 'y' : 'ies'} selected
-                &nbsp;&nbsp;&nbsp;-
-              </Typography>
-              <Box
-                display="flex"
-                alignItems="center"
-                onClick={() => onMultiDelete?.call(this)}
+      <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
+        {selectCount ? (
+          <>
+            <Typography variant="body1" sx={{ mr: 1, ml: 2 }} fontSize="13px">
+              {selectCount} Entr{selectCount === 1 ? 'y' : 'ies'} selected
+              &nbsp;&nbsp;&nbsp;-
+            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              onClick={() => onMultiDelete?.call(this)}
+            >
+              <Typography
+                variant="body1"
+                fontSize="13px"
+                color="red"
+                sx={{ cursor: 'pointer' }}
               >
-                <Typography
-                  variant="body1"
-                  fontSize="13px"
-                  color="red"
-                  sx={{ cursor: 'pointer' }}
-                >
-                  Delete entr{selectCount === 1 ? 'y' : 'ies'}
-                </Typography>
-                <Delete
-                  sx={{ color: red[600], cursor: 'pointer', fontSize: '15px' }}
+                Delete entr{selectCount === 1 ? 'y' : 'ies'}
+              </Typography>
+              <Delete
+                sx={{ color: red[600], cursor: 'pointer', fontSize: '15px' }}
+              />
+            </Box>
+          </>
+        ) : (
+          <></>
+        )}
+      </Box>
+      <TableContainer component={Paper}>
+        <Table
+          sx={{ minWidth: 700, overflowX: 'auto' }}
+          aria-label="custom pagination table"
+          size={size}
+        >
+          <TableHead sx={{ background: 'rgb(243,243,242)' }}>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  color="primary"
+                  size="small"
+                  checked={Object.values(checklist).length === data.length}
+                  onChange={() => toggleChecklist()}
+                  inputProps={{
+                    'aria-labelledby': '',
+                  }}
                 />
-              </Box>
-            </>
-          ) : (
-            <></>
-          )}
-        </Box>
-        <TableContainer component={Paper}>
-          <Table
-            sx={{ minWidth: 700, overflowX: 'auto' }}
-            aria-label="custom pagination table"
-            size={size}
-          >
-            <TableHead sx={{ background: 'rgb(243,243,242)' }}>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    size="small"
-                    checked={Object.values(checklist).length === data.length}
-                    onChange={() => toggleChecklist()}
-                    inputProps={{
-                      'aria-labelledby': '',
-                    }}
-                  />
+              </TableCell>
+              {tableHeaders.map((head) => (
+                <TableCell key={head.field} align={head.align || 'left'}>
+                  <TableSortLabel
+                    active={sorting?.orderBy === head.field}
+                    direction={
+                      sorting?.orderBy === head.field ? sorting!.orderOp : 'asc'
+                    }
+                    onClick={(_) => sorting?.onSort(head.field)}
+                  >
+                    {head.label}
+                  </TableSortLabel>
                 </TableCell>
-                {tableHeaders.map((head) => (
-                  <TableCell key={head.field} align={head.align || 'left'}>
-                    <TableSortLabel
-                      active={sorting?.orderBy === head.field}
-                      direction={
-                        sorting?.orderBy === head.field
-                          ? sorting!.orderOp
-                          : 'asc'
-                      }
-                      onClick={(_) => sorting?.onSort(head.field)}
-                    >
-                      {head.label}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-                <TableCell sx={{ width: '96px' }}></TableCell>
+              ))}
+              <TableCell sx={{ width: '96px' }}></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={tableHeaders.length}>
+                  <Grid container justifyContent="center" sx={{ py: 1 }}>
+                    <Spinner />
+                  </Grid>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((row, i) => (
+            ) : (
+              data.map((row, i) => (
                 <TableRow key={`row-${i}${row.id}`}>
                   <TableCell padding="checkbox">
                     <Checkbox
@@ -155,17 +158,12 @@ const GenericTable = ({
                     {renderActions(row)}
                   </TableCell>
                 </TableRow>
-              ))}
-              {/* {emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={1} />
-              </TableRow>
-            )} */}
-            </TableBody>
-            {renderFooter()}
-          </Table>
-        </TableContainer>
-      </Loader>
+              ))
+            )}
+          </TableBody>
+          {!loading && renderFooter()}
+        </Table>
+      </TableContainer>
     </Box>
   );
 };

@@ -1,14 +1,25 @@
 const fs = require('fs');
 const path = require('path');
-const { generateCreateForm } = require('./body');
+const { generateCreateForm } = require('./createBody');
+const { generateEditForm } = require('./editBody');
 
-exports.writeForm = (
-  settings,
-  { data, modelName, baseOutputFolder, corePrefix }
-) => {
+exports.writeCreateForm = ({
+  data,
+  modelName,
+  baseOutputFolder,
+  corePrefix,
+}) => {
   const createForm = generateCreateForm(data, modelName, corePrefix);
   fs.writeFileSync(
     path.join(baseOutputFolder, 'components', `Create${modelName}Form.tsx`),
+    createForm
+  );
+};
+
+exports.writeEditForm = ({ data, modelName, baseOutputFolder, corePrefix }) => {
+  const createForm = generateEditForm(data, modelName, corePrefix);
+  fs.writeFileSync(
+    path.join(baseOutputFolder, 'components', `Edit${modelName}Form.tsx`),
     createForm
   );
 };

@@ -46,3 +46,8 @@ export type Media = {
   file_name: string;
   size: number;
 };
+
+export type Paginated<T> = {
+  total: number;
+  data: T[];
+};
