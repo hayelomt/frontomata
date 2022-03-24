@@ -3,8 +3,9 @@ exports.generateText = ({ flexGrow, name, label, placeholder, subtype }) => `
   <TextField
     fullWidth
     name="${name}"
+    size="small"
     type="${subtype || 'text'}"
-    variant="standard"
+    variant="outlined"
     label="${label}"
     placeholder="${placeholder || ''}"
     value={formik.values.${name}}

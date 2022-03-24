@@ -13,12 +13,12 @@ const getContainerImports = (modelName, corePrefix) => {
     formik: ['FormikHelpers'],
     'react-router-dom': ['useParams'],
     react: ['useState', 'useEffect'],
-    [`${corePrefix}/../core/components/layout/Layout`]: 'Layout',
+    [`${corePrefix}/../core/ui/layout/Layout`]: 'Layout',
     [`${corePrefix}/../core/hooks/useSendApiData`]: ['useSendApiData'],
     [`${corePrefix}/../core/utils/ui/alert`]: ['toastError', 'toastMessage'],
     [`${corePrefix}/../core/utils/validation`]: ['parseValidationErrors'],
     [`${corePrefix}/../core/hooks/useFetchApiData`]: 'useFetchApiData',
-    [`${corePrefix}/../core/components/utility/Loading`]: 'Loading',
+    [`${corePrefix}/../core/ui/utility/Loading`]: 'Loading',
     [`../${camelCase(modelName)}`]: [`${modelName}Edit`, modelName],
     [`../components/Edit${modelName}Form`]: `Edit${modelName}Form`,
   };
@@ -29,7 +29,7 @@ const mapInputData = (templateData) => {
     const dateFields = getDateFields(templateData);
 
     if (dateFields.length) {
-      return `const formData = new FormData();
+      return `const formData: any = new FormData();
     const dateFields: string[] = ${JSON.stringify(dateFields)}
     Object.entries(values).forEach(([key, val]) => {
       if (dateFields.includes(key)) {
@@ -118,10 +118,12 @@ const generateContainer = ({ data, modelName, endpoint }) => {
   return (
     <Layout>
       <>
-        <Grid container sx={{ mb: 1, px: 1 }}>
-          <Typography variant="h5">Add ${modelName}</Typography>
+        <Grid sx={{ p: 2 }}>  
+          <Grid container sx={{ mb: 1, px: 1 }}>
+            <Typography variant="h5">Add ${modelName}</Typography>
+          </Grid>
+          <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
         </Grid>
-        <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
       </>
     </Layout>
   );

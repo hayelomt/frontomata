@@ -12,7 +12,7 @@ const getContainerImports = (modelName, corePrefix) => {
     '@mui/material': ['Grid', 'Typography'],
     formik: ['FormikHelpers'],
     'react-router-dom': ['useNavigate'],
-    [`${corePrefix}/../core/components/layout/Layout`]: 'Layout',
+    [`${corePrefix}/../core/ui/layout/Layout`]: 'Layout',
     [`${corePrefix}/../core/hooks/useSendApiData`]: ['useSendApiData'],
     [`${corePrefix}/../core/utils/ui/alert`]: ['toastError', 'toastMessage'],
     [`${corePrefix}/../core/utils/validation`]: ['parseValidationErrors'],
@@ -26,7 +26,7 @@ const mapInputData = (templateData) => {
     const dateFields = getDateFields(templateData);
 
     if (dateFields.length) {
-      return `const formData = new FormData();
+      return `const formData: any = new FormData();
     const dateFields: string[] = ${JSON.stringify(dateFields)}
     Object.entries(values).forEach(([key, val]) => {
       if (dateFields.includes(key)) {
@@ -90,10 +90,12 @@ const generateContainer = ({ data, modelName, endpoint }) => {
   return (
     <Layout>
       <>
-        <Grid container sx={{ mb: 1, px: 1 }}>
-          <Typography variant="h5">Add ${modelName}</Typography>
+        <Grid sx={{ p: 2 }}>
+          <Grid container sx={{ mb: 2, px: 1 }}>
+            <Typography variant="h5">Add ${modelName}</Typography>
+          </Grid>
+          <Create${modelName}Form onSubmit={handleSubmit} submitting={submitting} />
         </Grid>
-        <Create${modelName}Form onSubmit={handleSubmit} submitting={submitting} />
       </>
     </Layout>
   );

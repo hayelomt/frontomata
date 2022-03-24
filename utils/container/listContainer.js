@@ -38,13 +38,13 @@ const generateTableHeader = (data) => {
   return template;
 };
 
-const generateListClass = ({ modelName, endpoint, modelToken }) => {
+const generateListClass = ({ modelName, url, modelToken }) => {
   return `const ${modelName}List = () => {
   const [data, setData] = useState<Record<string, any>[]>([]);
   const { fetchData } = useFetchApiData();
 
   const handleFetchData = async (query: any, cb: (c: number) => void) => {
-    await fetchData('${endpoint}', {
+    await fetchData('${url}', {
       onSuccess: ({ total, data: apiData }: Paginated<${modelName}>) => {
         setData(apiData);
         cb(total);
@@ -65,8 +65,8 @@ const generateListClass = ({ modelName, endpoint, modelToken }) => {
             tableHeaders={tableHeaders}
             data={data}
             modelLabel="${modelName}s"
-            addRoute="${endpoint}/create"
-            editRoutePrefix="${endpoint}/edit"
+            addRoute="${url}/create"
+            editRoutePrefix="${url}/edit"
             actions={{
               onFetchData: handleFetchData,
               onDelete: handleDelete,
@@ -86,13 +86,13 @@ exports.writeListContainer = ({
   data,
   modelName,
   modelToken,
-  endpoint,
+  url,
   corePrefix,
   baseOutputFolder,
 }) => {
   let template = writeImports(getListImports(modelName, corePrefix)) + '\n';
   template += generateTableHeader(data) + '\n';
-  template += generateListClass({ modelName, modelToken, endpoint });
+  template += generateListClass({ modelName, modelToken, url });
 
   fs.writeFileSync(
     path.join(baseOutputFolder, 'components', `${modelName}List.tsx`),

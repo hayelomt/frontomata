@@ -22,6 +22,8 @@ const generateCode = async (templateFile) => {
     modelName,
     modelToken,
     endpoint,
+    url,
+    settings,
   } = require(`./templates/${templateFile}`);
   const corePrefix = getCorePrefix(folderPrefix);
 
@@ -32,43 +34,47 @@ const generateCode = async (templateFile) => {
   });
 
   // Model
-  writeModel({}, { data, modelName, corePrefix, baseOutputFolder });
+  writeModel(settings, { data, modelName, corePrefix, baseOutputFolder });
 
   // List
   writeListContainer({
     data,
     modelName,
     modelToken,
-    endpoint,
+    url,
     corePrefix,
     baseOutputFolder,
   });
   writeListPage({ modelName, corePrefix, baseOutputFolder });
 
-  // Create
-  writeCreateForm({ data, modelName, corePrefix, baseOutputFolder });
-  writeCreateContainer({
-    data,
-    modelName,
-    endpoint,
-    corePrefix,
-    baseOutputFolder,
-  });
-  writeCreatePage({ modelName, corePrefix, baseOutputFolder });
+  // Create related files
+  if (settings.create) {
+    writeCreateForm({ data, modelName, corePrefix, baseOutputFolder });
+    writeCreateContainer({
+      data,
+      modelName,
+      endpoint,
+      corePrefix,
+      baseOutputFolder,
+    });
+    writeCreatePage({ modelName, corePrefix, baseOutputFolder });
+  }
 
-  // Edit
-  writeEditForm({ data, modelName, corePrefix, baseOutputFolder });
-  writeEditContainer({
-    data,
-    modelName,
-    endpoint,
-    corePrefix,
-    baseOutputFolder,
-  });
-  writeEditPage({ modelName, corePrefix, baseOutputFolder });
+  // Edit related files
+  if (settings.update) {
+    writeEditForm({ data, modelName, corePrefix, baseOutputFolder });
+    writeEditContainer({
+      data,
+      modelName,
+      endpoint,
+      corePrefix,
+      baseOutputFolder,
+    });
+    writeEditPage({ modelName, corePrefix, baseOutputFolder });
+  }
 
   // Copy paste output
-  generateRouteManagerOutputs({}, { modelName, folderPrefix, endpoint });
+  generateRouteManagerOutputs(settings, { modelName, folderPrefix, url });
 };
 
 console.log(process.argv[2]);

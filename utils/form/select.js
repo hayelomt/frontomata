@@ -17,6 +17,7 @@ exports.generateSelect = ({ flexGrow, name, label, options }) => {
     <InputLabel>${label}</InputLabel>
     <Select
       value={formik.values.${name}}
+      size="small"
       label="${label}"
       onChange={formik.handleChange}
       name="${name}"

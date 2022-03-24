@@ -85,51 +85,64 @@ exports.getDateFields = (data) => {
 
 exports.generateRouteManagerOutputs = (
   settings,
-  { folderPrefix, modelName, endpoint }
+  { folderPrefix, modelName, url }
 ) => {
   let importFolder = '../../features/';
   if (folderPrefix) {
     importFolder += `${folderPrefix}/`;
   }
 
-  const imports = writeImports({
-    [`${importFolder}${camelCase(
-      modelName
-    )}/pages/Create${modelName}Page`]: `Create${modelName}Page`,
-    [`${importFolder}${camelCase(
-      modelName
-    )}/pages/Edit${modelName}Page`]: `Edit${modelName}Page`,
+  const importList = {
     [`${importFolder}${camelCase(
       modelName
     )}/pages/List${modelName}Page`]: `List${modelName}Page`,
-  });
+  };
 
-  const routes = `
+  if (settings.create) {
+    importList[
+      `${importFolder}${camelCase(modelName)}/pages/Create${modelName}Page`
+    ] = `Create${modelName}Page`;
+  }
+  if (settings.update) {
+    importList[
+      `${importFolder}${camelCase(modelName)}/pages/Edit${modelName}Page`
+    ] = `Edit${modelName}Page`;
+  }
+  const imports = writeImports(importList);
+
+  let routes = `
 <Route
-  path="${endpoint}"
+  path="${url}"
   element={
     <PrivateRoute>
       <List${modelName}Page />
     </PrivateRoute>
   }
 />
-<Route
-  path="${endpoint}/create"
-  element={
-    <PrivateRoute>
-      <Create${modelName}Page />
-    </PrivateRoute>
-  }
-/>
-<Route
-  path="${endpoint}/edit/:id"
-  element={
-    <PrivateRoute>
-      <Edit${modelName}Page />
-    </PrivateRoute>
-  }
-/>
   `;
+
+  if (settings.create) {
+    routes += `
+    <Route
+      path="${url}/create"
+      element={
+        <PrivateRoute>
+          <Create${modelName}Page />
+        </PrivateRoute>
+      }
+    />`;
+  }
+  if (settings.update) {
+    routes += `
+    <Route
+      path="${url}/edit/:id"
+      element={
+        <PrivateRoute>
+          <Edit${modelName}Page />
+        </PrivateRoute>
+      }
+    />`;
+  }
 
   console.log(
     'Copy to src/core/containers/RouteManager\n\n',
@@ -138,7 +151,7 @@ exports.generateRouteManagerOutputs = (
     routes
   );
 
-  const sidebar = `<SidebarLink to="${endpoint}" label="${modelName}" />`;
+  const sidebar = `<SidebarLink to="${url}" label="${modelName}" active={location.pathname.startsWith("${url}"}) />`;
 
   console.log('Copy to src/core/ui/layout/components/Sidebar\n\n', sidebar);
 };

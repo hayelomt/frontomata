@@ -4,7 +4,7 @@
 // } from '../../features/auth/service/authContext';
 // import RouteManager from './RouteManager';
 
-import RouteManager from './RouteManager';
+// import RouteManager from './RouteManager';
 
 // const App = () => {
 //   const authState = useAuthContext();
@@ -21,6 +21,8 @@ import RouteManager from './RouteManager';
 // };
 
 // export default App;
+
+import RouteManager from './RouteManager';
 
 const App = () => {
   return (

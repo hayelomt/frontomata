@@ -2,7 +2,13 @@ module.exports = {
   folderPrefix: '',
   modelName: 'Blog',
   modelToken: 'blog',
-  endpoint: '/blogs',
+  endpoint: 'blogs',
+  url: '/blogs',
+  settings: {
+    create: true,
+    update: true,
+    delete: true,
+  },
   data: [
     [
       {

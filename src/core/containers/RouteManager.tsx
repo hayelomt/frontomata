@@ -3,6 +3,9 @@ import PrivateRoute from '../../features/auth/containers/PrivateRoute';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import ProfilePage from '../../features/auth/pages/ProfilePage';
 import HomePage from '../../features/HomePage';
+import CreateBlogPage from '../../features/blog/pages/CreateBlogPage';
+import EditBlogPage from '../../features/blog/pages/EditBlogPage';
+import ListBlogPage from '../../features/blog/pages/ListBlogPage';
 
 const RouteManager = () => {
   return (
@@ -25,6 +28,9 @@ const RouteManager = () => {
             </PrivateRoute>
           }
         />
+        <Route path="/blogs" element={<ListBlogPage />} />
+        <Route path="/blogs/create" element={<CreateBlogPage />} />
+        <Route path="/blogs/edit/:id" element={<EditBlogPage />} />
       </Routes>
     </BrowserRouter>
   );

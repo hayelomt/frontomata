@@ -35,7 +35,7 @@ module.exports = {
 ### TODO
 
 - [x] Basic template generator
-- [] CRUD customization
+- [x] CRUD customization
 - [] Rich text support
 - [] date stylization
 - [] date format

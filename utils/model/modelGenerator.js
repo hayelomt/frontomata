@@ -16,8 +16,12 @@ exports.writeModel = (
   let output = writeImports(generateModelImports(corePrefix)) + '\n';
 
   output += generateModelType(modelName, data) + '\n\n';
-  output += generateModelCreateType(modelName, data) + '\n';
-  output += generateModelEditType(modelName, data);
+  if (settings.create) {
+    output += generateModelCreateType(modelName, data) + '\n';
+  }
+  if (settings.update) {
+    output += generateModelEditType(modelName, data);
+  }
 
   // console.dir(output);
   const modelFile = camelCase(modelName);
