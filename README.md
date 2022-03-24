@@ -35,11 +35,14 @@ module.exports = {
 ### TODO
 
 - [x] Basic template generator
+- [] CRUD customization
+- [] Rich text support
+- [] date stylization
+- [] date format
+- [] size small for forms
 - [] Auth handling
 - [] Add Profile menu on header
 - [] Single type generator
-- [] Rich text support
-- [] CRUD customization
-- [] Delete integration
 - [] Table customization
-- [] Add media upload manager
+- [] Delete integration
+- [] Add media upload manager(optional)
