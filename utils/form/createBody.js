@@ -2,12 +2,16 @@ const { mergeImports, writeImports, tab } = require('../common-utils');
 const { generatorMap, importMap } = require('./map');
 const camelCase = require('camelcase');
 const { getType } = require('../model/model');
+const { getEditInitializer } = require('./editBody');
 
-const getCreateInputMap = (corePrefix, modelName) => {
+const getCreateInputMap = (collectionType, modelName) => {
   const modelFile = camelCase(modelName);
   return {
     formik: ['FormikHelpers', 'useFormik'],
-    [`../${modelFile}`]: [`${modelName}Create`],
+    [`../${modelFile}`]: [
+      `${modelName}Create`,
+      ...(collectionType ? [] : [modelName]),
+    ],
   };
 };
 
@@ -96,7 +100,15 @@ const generateFullForm = (body, actionBar) => {
   `;
 };
 
-const generateClass = (form, modelName, data) => {
+const generateClass = (form, modelName, data, collectionType) => {
+  const modelInstance = camelCase(modelName);
+  const modelProp = collectionType
+    ? ''
+    : `${modelInstance}: ${modelName} | null;`;
+
+  const createInit = `{${getCreateInitializer(data)}}`;
+  const editInit = `{${getEditInitializer(data, modelInstance)}}`;
+
   return `
 type ${modelName}Props = {
   onSubmit: (
@@ -104,11 +116,13 @@ type ${modelName}Props = {
     helpers: FormikHelpers<${modelName}Create>
   ) => Promise<boolean>;
   submitting: boolean;
+  ${modelProp}
 };
 
 const Create${modelName}Form = ({
   onSubmit,
   submitting,
+  ${collectionType ? '' : modelInstance}
 }: ${modelName}Props) => {
   const handleSubmit = async (
     value: ${modelName}Create,
@@ -118,8 +132,10 @@ const Create${modelName}Form = ({
     if (success) formik.resetForm();
   };
 
-  const initialValues: ${modelName}Create =  {
-${getCreateInitializer(data)}
+  const initialValues: ${modelName}Create =  ${
+    collectionType
+      ? createInit
+      : `${modelInstance} === null ? ${createInit} : ${editInit}`
   }
 
   const formik = useFormik({
@@ -137,13 +153,13 @@ ${getCreateInitializer(data)}
 export default Create${modelName}Form;`;
 };
 
-exports.generateCreateForm = (data, modelName, corePrefix) => {
-  const curMappedImport = getCreateInputMap(corePrefix, modelName);
+exports.generateCreateForm = (data, modelName, collectionType) => {
+  const curMappedImport = getCreateInputMap(collectionType, modelName);
 
   const formBody = generateFormBody(data, curMappedImport);
   const actionTab = generateActionTab();
   const form = generateFullForm(formBody, actionTab);
-  const formClass = generateClass(form, modelName, data);
+  const formClass = generateClass(form, modelName, data, collectionType);
 
   mergeImports(curMappedImport, importMap.body);
   mergeImports(curMappedImport, importMap.actionTab);

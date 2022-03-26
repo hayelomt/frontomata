@@ -11,7 +11,7 @@ const { writeImports } = require('../common-utils');
 
 exports.writeModel = (
   settings,
-  { data, modelName, corePrefix, baseOutputFolder }
+  { data, modelName, corePrefix, baseOutputFolder, collectionType }
 ) => {
   let output = writeImports(generateModelImports(corePrefix)) + '\n';
 
@@ -19,7 +19,7 @@ exports.writeModel = (
   if (settings.create) {
     output += generateModelCreateType(modelName, data) + '\n';
   }
-  if (settings.update) {
+  if (collectionType && settings.update) {
     output += generateModelEditType(modelName, data);
   }
 

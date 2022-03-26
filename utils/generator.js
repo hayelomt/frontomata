@@ -24,6 +24,7 @@ const generateCode = async (templateFile) => {
     endpoint,
     url,
     settings,
+    collectionType,
   } = require(`./templates/${templateFile}`);
   const corePrefix = getCorePrefix(folderPrefix);
 
@@ -34,39 +35,58 @@ const generateCode = async (templateFile) => {
   });
 
   // Model
-  writeModel(settings, { data, modelName, corePrefix, baseOutputFolder });
-
-  // List
-  writeListContainer({
+  writeModel(settings, {
     data,
     modelName,
-    modelToken,
-    url,
     corePrefix,
     baseOutputFolder,
+    collectionType,
   });
-  writeListPage({ modelName, corePrefix, baseOutputFolder });
+
+  // List
+  if (collectionType) {
+    writeListContainer({
+      data,
+      modelName,
+      modelToken,
+      url,
+      endpoint,
+      corePrefix,
+      baseOutputFolder,
+      settings,
+    });
+    writeListPage({ modelName, corePrefix, baseOutputFolder });
+  }
 
   // Create related files
   if (settings.create) {
-    writeCreateForm({ data, modelName, corePrefix, baseOutputFolder });
+    writeCreateForm({
+      data,
+      modelName,
+      corePrefix,
+      baseOutputFolder,
+      collectionType,
+    });
     writeCreateContainer({
       data,
       modelName,
       endpoint,
+      url,
       corePrefix,
       baseOutputFolder,
+      collectionType,
     });
     writeCreatePage({ modelName, corePrefix, baseOutputFolder });
   }
 
   // Edit related files
-  if (settings.update) {
+  if (collectionType && settings.update) {
     writeEditForm({ data, modelName, corePrefix, baseOutputFolder });
     writeEditContainer({
       data,
       modelName,
       endpoint,
+      url,
       corePrefix,
       baseOutputFolder,
     });
@@ -74,7 +94,12 @@ const generateCode = async (templateFile) => {
   }
 
   // Copy paste output
-  generateRouteManagerOutputs(settings, { modelName, folderPrefix, url });
+  generateRouteManagerOutputs(settings, {
+    modelName,
+    folderPrefix,
+    url,
+    collectionType,
+  });
 };
 
 console.log(process.argv[2]);

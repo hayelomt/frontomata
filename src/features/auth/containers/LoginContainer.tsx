@@ -2,6 +2,7 @@ import { FormikHelpers } from 'formik';
 import { useContext } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import { useSendApiData } from '../../../core/hooks/useSendApiData';
+import constants from '../../../core/utils/constants';
 import { toastError } from '../../../core/utils/ui/alert';
 import { parseValidationErrors } from '../../../core/utils/validation';
 import { LoginType, User } from '../auth';
@@ -23,7 +24,7 @@ const LoginContainer = () => {
     { setFieldError }: FormikHelpers<LoginType>
   ) => {
     callApi({
-      endpoint: `auth/login`,
+      endpoint: `${constants.authUrl}/login`,
       data: values,
       onValidationError: (err) => parseValidationErrors(err, setFieldError),
       onError: toastError,

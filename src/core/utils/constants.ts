@@ -1,5 +1,6 @@
 const constants = {
-  apiUrl: '',
+  apiUrl: 'http://localhost:9995/api',
+  authUrl: 'auth',
   keys: {
     user: 'user',
   },

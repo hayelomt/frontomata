@@ -8,6 +8,7 @@ exports.generateDate = ({ flexGrow, name, label }) => `
       onChange={(e) => {
         formik.setFieldValue('${name}', e);
       }}
+      dateFormat="yyyy/MM/dd"
     />
   </Grid>
   <Grid item xs={12}>

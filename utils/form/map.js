@@ -6,6 +6,7 @@ const { generateRadio } = require('./radio');
 const { generateFile } = require('./file');
 const { generateDate } = require('./date');
 const { generatePlaceholder } = require('./formUtils');
+const { generateRichtext } = require('./richText');
 
 exports.importMap = {
   text: {
@@ -13,6 +14,11 @@ exports.importMap = {
   },
   textarea: {
     '@mui/material': ['Grid', 'TextField'],
+  },
+  richText: {
+    '@mui/material': ['Grid', 'FormHelperText'],
+    'react-quill': 'ReactQuill',
+    '../../../core/utils/utility': ['richTextModules'],
   },
   checkbox: {
     '@mui/material': [
@@ -64,6 +70,7 @@ exports.importMap = {
 
 exports.generatorMap = {
   text: generateText,
+  richText: generateRichtext,
   date: generateDate,
   textarea: generateTextarea,
   checkbox: generateCheckbox,

@@ -85,63 +85,69 @@ exports.getDateFields = (data) => {
 
 exports.generateRouteManagerOutputs = (
   settings,
-  { folderPrefix, modelName, url }
+  { folderPrefix, modelName, url, collectionType }
 ) => {
   let importFolder = '../../features/';
   if (folderPrefix) {
     importFolder += `${folderPrefix}/`;
   }
 
-  const importList = {
-    [`${importFolder}${camelCase(
-      modelName
-    )}/pages/List${modelName}Page`]: `List${modelName}Page`,
-  };
+  const importList = {};
+
+  if (collectionType) {
+    importList[
+      `${importFolder}${camelCase(modelName)}/pages/List${modelName}Page`
+    ] = `List${modelName}Page`;
+  }
 
   if (settings.create) {
     importList[
       `${importFolder}${camelCase(modelName)}/pages/Create${modelName}Page`
     ] = `Create${modelName}Page`;
   }
-  if (settings.update) {
+
+  if (collectionType && settings.update) {
     importList[
       `${importFolder}${camelCase(modelName)}/pages/Edit${modelName}Page`
     ] = `Edit${modelName}Page`;
   }
   const imports = writeImports(importList);
 
-  let routes = `
-<Route
-  path="${url}"
-  element={
-    <PrivateRoute>
-      <List${modelName}Page />
-    </PrivateRoute>
+  let routes = ``;
+
+  if (collectionType) {
+    routes += `
+      <Route
+        path="${url}"
+        element={
+          <PrivateRoute>
+            <List${modelName}Page />
+          </PrivateRoute>
+        }
+      />`;
   }
-/>
-  `;
 
   if (settings.create) {
     routes += `
-    <Route
-      path="${url}/create"
-      element={
-        <PrivateRoute>
-          <Create${modelName}Page />
-        </PrivateRoute>
-      }
-    />`;
+      <Route
+        path="${url}/create"
+        element={
+          <PrivateRoute>
+            <Create${modelName}Page />
+          </PrivateRoute>
+        }
+      />`;
   }
-  if (settings.update) {
+  if (collectionType && settings.update) {
     routes += `
-    <Route
-      path="${url}/edit/:id"
-      element={
-        <PrivateRoute>
-          <Edit${modelName}Page />
-        </PrivateRoute>
-      }
-    />`;
+      <Route
+        path="${url}/edit/:id"
+        element={
+          <PrivateRoute>
+            <Edit${modelName}Page />
+          </PrivateRoute>
+        }
+      />`;
   }
 
   console.log(
@@ -151,7 +157,7 @@ exports.generateRouteManagerOutputs = (
     routes
   );
 
-  const sidebar = `<SidebarLink to="${url}" label="${modelName}" active={location.pathname.startsWith("${url}"}) />`;
+  const sidebar = `<SidebarLink to="${url}" label="${modelName}" active={location.pathname.startsWith("${url}")} />`;
 
   console.log('Copy to src/core/ui/layout/components/Sidebar\n\n', sidebar);
 };

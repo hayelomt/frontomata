@@ -6,10 +6,13 @@ Generating admin template base with code
 
 ```
 module.exports = {
-  folderPrefix: '',
-  modelName: 'Blog',
-  modelToken: 'blog',
-  endpoint: '/blogs',
+  modelName: string,
+  modelToken: string,
+  collectionType: boolean,
+  folderPrefix: string,
+  endpoint: { create: string, update: string, delete: string, read: string, },
+  url: string,
+  settings: { create: true, update: true, delete: true },
   data: [],
 }
 ```
@@ -18,12 +21,17 @@ module.exports = {
 
 ```
 {
-  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'file' | 'date' | 'placeholder',
-  subtype?: 'text' | 'number',
   name: string,
   label: string,
+  type: 'text' | 'richText' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'file' | 'date',
+  subtype?: 'text' | 'number',
   flexGrow: number,
-  placeholder: string,
+  placeholder?: string,
+  showOnTable?: boolean,
+  tableLabel?: string,
+} || {
+  type: 'placeholder',
+  flexGrow: number
 }
 
 // For type = 'radios' | 'select'
@@ -36,13 +44,22 @@ module.exports = {
 
 - [x] Basic template generator
 - [x] CRUD customization
-- [] Rich text support
+- [x] date format
+- [x] size small for forms
+- [x] Add Profile menu on header
+- [x] Auth handling
+- [x] Single type generator
+- [x] Delete integration
+- [x] Rich text support
+- [] account management
+
+#### Optional
+
+- [] continue adding check on create
+- [] replace rich text editor
+- [] Stylize file chooser
+- [] Table customization, custom render
 - [] date stylization
-- [] date format
-- [] size small for forms
-- [] Auth handling
-- [] Add Profile menu on header
-- [] Single type generator
-- [] Table customization
-- [] Delete integration
 - [] Add media upload manager(optional)
+- [] fix richTextModule import path
+- [] firebase support

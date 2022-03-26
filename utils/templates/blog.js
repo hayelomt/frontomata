@@ -2,7 +2,12 @@ module.exports = {
   folderPrefix: '',
   modelName: 'Blog',
   modelToken: 'blog',
-  endpoint: 'blogs',
+  endpoint: {
+    create: 'blogs',
+    read: 'blogs',
+    update: 'blogs',
+    delete: 'blogs',
+  },
   url: '/blogs',
   settings: {
     create: true,

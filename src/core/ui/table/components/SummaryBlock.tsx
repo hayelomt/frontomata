@@ -6,6 +6,7 @@ type SummaryBlockProps = {
   modelLabel: string;
   itemCount: number;
   addRoute: string;
+  showCreate: boolean;
 };
 
 const SummaryBlock = ({
@@ -13,6 +14,7 @@ const SummaryBlock = ({
   buttonLabel,
   itemCount,
   addRoute,
+  showCreate,
 }: SummaryBlockProps) => {
   return (
     <>
@@ -28,14 +30,16 @@ const SummaryBlock = ({
           </Grid>
         </Grid>
         <Grid item>
-          <Button
-            variant="contained"
-            component={Link}
-            to={addRoute}
-            sx={{ height: '30px' }}
-          >
-            {buttonLabel}
-          </Button>
+          {showCreate && (
+            <Button
+              variant="contained"
+              component={Link}
+              to={addRoute}
+              sx={{ height: '30px' }}
+            >
+              {buttonLabel}
+            </Button>
+          )}
         </Grid>
       </Grid>
     </>

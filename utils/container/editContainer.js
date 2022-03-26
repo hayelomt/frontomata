@@ -21,6 +21,7 @@ const getContainerImports = (modelName, corePrefix) => {
     [`${corePrefix}/../core/ui/utility/Loading`]: 'Loading',
     [`../${camelCase(modelName)}`]: [`${modelName}Edit`, modelName],
     [`../components/Edit${modelName}Form`]: `Edit${modelName}Form`,
+    [`${corePrefix}/../core/ui/utility/ReturnButton`]: 'ReturnButton',
   };
 };
 
@@ -39,13 +40,13 @@ const mapInputData = (templateData) => {
       }
     });`;
     } else {
-      return `const formData = new FormData();
+      return `const formData: any = new FormData();
     Object.entries(values).forEach(([key, val]) => {
       formData.append(key, val as Blob);
     });`;
     }
   } else {
-    return `const formData = { ...values };
+    return `const formData: any = { ...values };
     const dateFields: string[] = ${JSON.stringify(getDateFields(templateData))};
     dateFields.forEach((field) => {
       if (formData[field]) {
@@ -56,13 +57,14 @@ const mapInputData = (templateData) => {
   }
 };
 
-const generateContainer = ({ data, modelName, endpoint }) => {
+const generateContainer = ({ data, modelName, endpoint, url }) => {
   // eslint-disable-next-line no-template-curly-in-string
   const id = '${id}';
-  const baseEndpoint = `${endpoint}/${id}`;
+  const baseEndpoint = `${endpoint.read}/${id}`;
+  const basePatchEndpoint = `${endpoint.update}/${id}`;
   const patchEndpoint = containsFile(data)
-    ? `${baseEndpoint}?_method=PATCH`
-    : baseEndpoint;
+    ? `${basePatchEndpoint}?_method=PATCH`
+    : basePatchEndpoint;
   const method = containsFile(data) ? 'post' : 'patch';
   const modelInstance = camelCase(modelName);
 
@@ -116,15 +118,13 @@ const generateContainer = ({ data, modelName, endpoint }) => {
   if (loading || !${modelInstance}) return <Loading />;
 
   return (
-    <Layout>
-      <>
-        <Grid sx={{ p: 2 }}>  
-          <Grid container sx={{ mb: 1, px: 1 }}>
-            <Typography variant="h5">Add ${modelName}</Typography>
-          </Grid>
-          <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
+    <Layout renderLeftToolbar={() => <ReturnButton to="${url}" />}>
+      <Grid sx={{ p: 2 }}>  
+        <Grid container sx={{ mb: 1, px: 1 }}>
+          <Typography variant="h5">Edit ${modelName}</Typography>
         </Grid>
-      </>
+        <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
+      </Grid>
     </Layout>
   );
 };
@@ -138,10 +138,11 @@ exports.writeEditContainer = ({
   modelName,
   endpoint,
   corePrefix,
+  url,
   baseOutputFolder,
 }) => {
   let output = writeImports(getContainerImports(modelName, corePrefix)) + '\n';
-  output += generateContainer({ data, modelName, endpoint });
+  output += generateContainer({ data, modelName, endpoint, url });
 
   fs.writeFileSync(
     path.join(baseOutputFolder, 'containers', `Edit${modelName}Container.tsx`),

@@ -142,7 +142,7 @@ const GenericTable = ({
                       onChange={(e) => {
                         e.stopPropagation();
                         toggleChecklist(row.id);
-                        console.log('toggle', row);
+                        // console.log('toggle', row);
                       }}
                     />
                   </TableCell>

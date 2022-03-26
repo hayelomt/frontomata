@@ -17,7 +17,7 @@ import useDensity from './hooks/useDensity';
 
 type TableActions = {
   onFetchData: (query: any, cb: (c: number) => void) => Promise<void>;
-  onDelete: (m: Model) => Promise<void>;
+  onDelete: (id: number | string, showMessage?: boolean) => Promise<boolean>;
 };
 
 type TableContainerProps = {
@@ -28,6 +28,11 @@ type TableContainerProps = {
   addRoute: string;
   modelLabel: string;
   actions: TableActions;
+  settings?: {
+    canEdit: boolean;
+    canDelete: boolean;
+    canCreate: boolean;
+  };
 };
 
 const TableContainer = ({
@@ -38,6 +43,11 @@ const TableContainer = ({
   addRoute,
   modelLabel,
   actions: { onFetchData, onDelete },
+  settings = {
+    canEdit: true,
+    canDelete: true,
+    canCreate: true,
+  },
 }: TableContainerProps) => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<Record<string, any>>({});
@@ -51,32 +61,61 @@ const TableContainer = ({
     modelToken,
     tableHeaders
   );
-  const { checklist, toggleChecklist } = useChecklist(data);
+  const { checklist, toggleChecklist, resetChecklist } = useChecklist(data);
+
+  const fetchData = async () => {
+    await onFetchData(
+      {
+        page: page + 1,
+        rowsPerPage,
+        sortField,
+        sortOp,
+        filter,
+      },
+      (t) => {
+        setTotal(t);
+      }
+    );
+
+    setLoading(false);
+  };
 
   useEffect(() => {
     setLoading(true);
-    (async () => {
-      await onFetchData(
-        {
-          page: page + 1,
-          rowsPerPage,
-          sortField,
-          sortOp,
-          filter,
-        },
-        (t) => {
-          setTotal(t);
-        }
-      );
-
-      setLoading(false);
-    })();
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, sortField, sortOp, filter]);
 
   const filteredHeaders = tableHeaders.filter(
     (header) => fieldVisible[header.field]
   );
+
+  const handleDelete = async (item: Model) => {
+    if (await onDelete(item.id)) {
+      await fetchData();
+    }
+  };
+
+  const handleMultiDelete = async () => {
+    let success = false;
+    const promises: any[] = [];
+
+    console.log(Object.keys(checklist));
+
+    Object.keys(checklist).forEach((key) => {
+      // promises.push(
+      //   onDelete(key, false).then((deleted) => {
+      //     success = success || deleted;
+      //   })
+      // );
+    });
+
+    await Promise.all(promises);
+
+    resetChecklist();
+
+    if (success) await fetchData();
+  };
 
   return (
     <>
@@ -86,6 +125,7 @@ const TableContainer = ({
         checklist={checklist}
         toggleChecklist={toggleChecklist}
         size={dense ? 'small' : 'medium'}
+        onMultiDelete={handleMultiDelete}
         sorting={{
           orderBy: sortField,
           orderOp: sortOp,
@@ -98,6 +138,7 @@ const TableContainer = ({
             addRoute={addRoute}
             buttonLabel={`+ New ${modelLabel}`}
             itemCount={total}
+            showCreate={settings.canCreate}
           />
         )}
         renderFilterBlock={() => (
@@ -128,16 +169,19 @@ const TableContainer = ({
         renderActions={(item: Model) => (
           <>
             <Grid container justifyContent="flex-end" alignItems="flex-end">
-              <Link to={`${editRoutePrefix}/${item.id}`}>
-                <Edit fontSize="small" sx={{ mr: 1, fontSize: '15px' }} />
-              </Link>
-              <DeleteAction
-                message="Are you sure you want to remove entry?"
-                onDelete={async (e) => {
-                  // e.stopPropagation();
-                  onDelete(item);
-                }}
-              />
+              {settings.canEdit && (
+                <Link to={`${editRoutePrefix}/${item.id}`}>
+                  <Edit fontSize="small" sx={{ mr: 1, fontSize: '15px' }} />
+                </Link>
+              )}
+              {settings.canDelete && (
+                <DeleteAction
+                  message="Are you sure you want to remove entry?"
+                  onDelete={async (e) => {
+                    handleDelete(item);
+                  }}
+                />
+              )}
             </Grid>
           </>
         )}

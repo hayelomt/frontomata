@@ -18,7 +18,7 @@ const getToken = () => getUser()?.token || '';
 const checkUserApi = async (token: string): Promise<User | null> => {
   try {
     const res = await axios.post(
-      `${constants.apiUrl}/auth/who-am-i`,
+      `${constants.apiUrl}/${constants.authUrl}/who-am-i`,
       {},
       {
         headers: {
@@ -38,7 +38,7 @@ const checkUserApi = async (token: string): Promise<User | null> => {
 const logoutUserApi = async (token: string): Promise<boolean> => {
   try {
     const res = await axios.post(
-      `${constants.apiUrl}/auth/logout`,
+      `${constants.apiUrl}/${constants.authUrl}/logout`,
       {},
       {
         headers: {

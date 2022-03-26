@@ -156,3 +156,5 @@ ${writeImports(curMappedImport)}
 ${formClass}
 `;
 };
+
+exports.getEditInitializer = getEditInitializer;

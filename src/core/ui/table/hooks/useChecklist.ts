@@ -26,7 +26,16 @@ const useChecklist = (data: any[]) => {
     }
   };
 
-  return { checklist, toggleChecklist };
+  const resetChecklist = () => {
+    const newChecklist = { ...checklist };
+    Object.keys(newChecklist).forEach((key) => {
+      delete newChecklist[key];
+    });
+
+    setChecklist(newChecklist);
+  };
+
+  return { checklist, toggleChecklist, resetChecklist };
 };
 
 export default useChecklist;

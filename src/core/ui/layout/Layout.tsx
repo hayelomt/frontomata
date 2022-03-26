@@ -10,6 +10,8 @@ import {
 } from '@mui/material';
 import Sidebar from './components/Sidebar';
 import { Menu as MenuIcon } from '@mui/icons-material';
+import ProfileMenu from './components/ProfileMenu';
+import AuthContext from '../../../features/auth/service/authContext';
 
 type LayoutProps = {
   children: React.ReactChild;
@@ -26,6 +28,7 @@ const Layout: React.FC<LayoutProps> = ({
   renderRightToolbar = () => <></>,
 }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { logoutUser } = React.useContext(AuthContext);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -59,9 +62,7 @@ const Layout: React.FC<LayoutProps> = ({
           <Box sx={{ flexGrow: 1 }}>{renderLeftToolbar()}</Box>
           <Box>
             {renderRightToolbar()}
-            <Typography variant="h6" noWrap component="div">
-              Right
-            </Typography>
+            <ProfileMenu onLogout={logoutUser!} />
           </Box>
         </Toolbar>
       </AppBar>

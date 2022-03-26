@@ -1,6 +1,7 @@
 import { FormikHelpers } from 'formik';
 import { useContext } from 'react';
 import { useSendApiData } from '../../../core/hooks/useSendApiData';
+import constants from '../../../core/utils/constants';
 import { toastError, toastMessage } from '../../../core/utils/ui/alert';
 import { parseValidationErrors } from '../../../core/utils/validation';
 import { ProfileFormType, User } from '../auth';
@@ -17,7 +18,7 @@ const ProfileContainer = () => {
   ) => {
     let success = false;
     await callApi({
-      endpoint: `auth/profile`,
+      endpoint: `${constants.authUrl}/profile`,
       data: values,
       method: 'patch',
       onValidationError: (err) => parseValidationErrors(err, setFieldError),
