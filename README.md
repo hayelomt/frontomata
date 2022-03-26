@@ -51,7 +51,7 @@ module.exports = {
 - [x] Single type generator
 - [x] Delete integration
 - [x] Rich text support
-- [] account management
+- [x] account management
 
 #### Optional
 

@@ -3,9 +3,6 @@ import PrivateRoute from '../../features/auth/containers/PrivateRoute';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import ProfilePage from '../../features/auth/pages/ProfilePage';
 import HomePage from '../../features/HomePage';
-import ListImpactPage from '../../features/impact/pages/ListImpactPage';
-import CreateImpactPage from '../../features/impact/pages/CreateImpactPage';
-import EditImpactPage from '../../features/impact/pages/EditImpactPage';
 
 const RouteManager = () => {
   return (
@@ -26,32 +23,6 @@ const RouteManager = () => {
             <PrivateRoute>
               <ProfilePage />
             </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/impacts"
-          element={
-            <>
-              <ListImpactPage />
-            </>
-          }
-        />
-
-        <Route
-          path="/impacts/create"
-          element={
-            <>
-              <CreateImpactPage />
-            </>
-          }
-        />
-        <Route
-          path="/impacts/edit/:id"
-          element={
-            <>
-              <EditImpactPage />
-            </>
           }
         />
 
