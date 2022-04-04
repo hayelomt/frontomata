@@ -29,10 +29,10 @@ const generateTableHeader = (data) => {
 
   template += displayFields
     .map(
-      ({ name, tableLabel, align }) =>
+      ({ name, tableLabel, align, renderItem }) =>
         `${tab}{ field: '${name}', label: '${tableLabel || name}', align: '${
           align || 'left'
-        }' },`
+        }'${renderItem ? `, renderItem: ${renderItem}` : ''} },`
     )
     .join('\n');
 
@@ -93,16 +93,21 @@ const generateListClass = ({
             tableHeaders={tableHeaders}
             data={data}
             modelLabel="${modelName}s"
-            addRoute="${url}/create"
-            editRoutePrefix="${url}/edit"
             actions={{
               onFetchData: handleFetchData,
               ${settings.delete ? 'onDelete: handleDelete,' : ''}
             }}
+            routes={{ 
+              edit: "${url}/edit",
+              create: "${url}/create",
+              delete: "${url}",
+              view: "${url}",
+             }}
             settings={{
-              canCreate: ${settings.create},
-              canEdit: ${settings.update},
-              canDelete: ${settings.delete},
+              canCreate: ${settings.create || false},
+              canEdit: ${settings.update || false},
+              canDelete: ${settings.delete || false},
+              canViewItem: ${settings.viewItem || false}
             }}
           />
         </Box>

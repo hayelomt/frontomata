@@ -8,7 +8,6 @@ import App from './core/containers/App';
 import theme from './core/theme';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-quill/dist/quill.snow.css';
-import 'react-datepicker/dist/react-datepicker.css';
 import './index.css';
 
 ReactDOM.render(

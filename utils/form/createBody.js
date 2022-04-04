@@ -8,6 +8,7 @@ const getCreateInputMap = (collectionType, modelName) => {
   const modelFile = camelCase(modelName);
   return {
     formik: ['FormikHelpers', 'useFormik'],
+    'react-router-dom': ['useNavigate'],
     [`../${modelFile}`]: [
       `${modelName}Create`,
       ...(collectionType ? [] : [modelName]),
@@ -100,7 +101,7 @@ const generateFullForm = (body, actionBar) => {
   `;
 };
 
-const generateClass = (form, modelName, data, collectionType) => {
+const generateClass = (form, modelName, data, collectionType, url) => {
   const modelInstance = camelCase(modelName);
   const modelProp = collectionType
     ? ''
@@ -124,12 +125,17 @@ const Create${modelName}Form = ({
   submitting,
   ${collectionType ? '' : modelInstance}
 }: ${modelName}Props) => {
+  const navigate = useNavigate();
+
   const handleSubmit = async (
     value: ${modelName}Create,
     helpers: FormikHelpers<${modelName}Create>
   ) => {
     const success = await onSubmit(value, helpers);
-    if (success) formik.resetForm();
+    if (success) {
+      navigate('/', { replace: true });
+      navigate('${url}/create', { replace: true });
+    };
   };
 
   const initialValues: ${modelName}Create =  ${
@@ -153,13 +159,13 @@ const Create${modelName}Form = ({
 export default Create${modelName}Form;`;
 };
 
-exports.generateCreateForm = (data, modelName, collectionType) => {
+exports.generateCreateForm = (data, modelName, collectionType, url) => {
   const curMappedImport = getCreateInputMap(collectionType, modelName);
 
   const formBody = generateFormBody(data, curMappedImport);
   const actionTab = generateActionTab();
   const form = generateFullForm(formBody, actionTab);
-  const formClass = generateClass(form, modelName, data, collectionType);
+  const formClass = generateClass(form, modelName, data, collectionType, url);
 
   mergeImports(curMappedImport, importMap.body);
   mergeImports(curMappedImport, importMap.actionTab);

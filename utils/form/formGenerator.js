@@ -7,10 +7,10 @@ exports.writeCreateForm = ({
   data,
   modelName,
   baseOutputFolder,
-  corePrefix,
   collectionType,
+  url,
 }) => {
-  const createForm = generateCreateForm(data, modelName, collectionType);
+  const createForm = generateCreateForm(data, modelName, collectionType, url);
   fs.writeFileSync(
     path.join(baseOutputFolder, 'components', `Create${modelName}Form.tsx`),
     createForm

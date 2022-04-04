@@ -13,6 +13,7 @@ import {
   Paper,
   Grid,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { TableHeader, TableSorting } from '../tableTypes';
 import { Delete } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
@@ -116,6 +117,19 @@ const GenericTable = ({
                   </TableSortLabel>
                 </TableCell>
               ))}
+
+              <TableCell variant="head">
+                <TableSortLabel
+                  active={sorting?.orderBy === 'created_at'}
+                  direction={
+                    sorting?.orderBy === 'created_at' ? sorting!.orderOp : 'asc'
+                  }
+                  onClick={(_) => sorting?.onSort('created_at')}
+                >
+                  Date Created
+                </TableSortLabel>
+              </TableCell>
+
               <TableCell sx={{ width: '96px' }}></TableCell>
             </TableRow>
           </TableHead>
@@ -154,6 +168,11 @@ const GenericTable = ({
                       {row[tableHead.field]}
                     </TableCell>
                   ))}
+                  <TableCell component="th" scope="row">
+                    {DateTime.fromISO(row.created_at).toLocaleString(
+                      DateTime.DATE_MED
+                    )}
+                  </TableCell>
                   <TableCell align="right" sx={{ width: '96px' }}>
                     {renderActions(row)}
                   </TableCell>

@@ -6,11 +6,19 @@ exports.generateFile = ({ flexGrow, name, label }) => `
   <Box>
     <input
       type="file"
-      onChange={(e) => {
-        // TODO: Handle onChange
+      onChange={({ target: { files } }) => {
+        formik.setFieldValue(
+          '${name}',
+          files && files.length ? files[0] : null
+        );
       }}
       name="${name}"
     />
   </Box>
+  {formik.touched.${name} && formik.errors.${name} && (
+    <FormHelperText error>
+      {formik.errors.${name}}
+    </FormHelperText>
+  )}
 </Grid>
 `;
