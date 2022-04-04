@@ -1,6 +1,11 @@
 import useTablePagination from './hooks/useTablePagination';
 import GenericTable from './components/GenericTable';
-import { TableHeader } from './tableTypes';
+import {
+  RouteSettings,
+  TableActions,
+  TableHeader,
+  TableSettings,
+} from './tableTypes';
 import DeleteAction from '../utility/DeleteAction';
 import GenericTableFooter from './components/GenericTableFooter';
 import FilterBlock from './components/filters/FilterBlock';
@@ -10,44 +15,29 @@ import useChecklist from './hooks/useChecklist';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Model } from '../../../core/utils/types';
-import { Edit } from '@mui/icons-material';
+import { Edit, Visibility } from '@mui/icons-material';
 import SummaryBlock from './components/SummaryBlock';
 import { Grid } from '@mui/material';
 import useDensity from './hooks/useDensity';
-
-type TableActions = {
-  onFetchData: (query: any, cb: (c: number) => void) => Promise<void>;
-  onDelete: (id: number | string, showMessage?: boolean) => Promise<boolean>;
-};
 
 type TableContainerProps = {
   modelToken: string;
   data: Record<string, any>[];
   tableHeaders: TableHeader[];
-  editRoutePrefix: string;
-  addRoute: string;
   modelLabel: string;
   actions: TableActions;
-  settings?: {
-    canEdit: boolean;
-    canDelete: boolean;
-    canCreate: boolean;
-  };
+  routes: RouteSettings;
+  settings: TableSettings;
 };
 
 const TableContainer = ({
   modelToken,
   tableHeaders,
   data,
-  editRoutePrefix,
-  addRoute,
   modelLabel,
   actions: { onFetchData, onDelete },
-  settings = {
-    canEdit: true,
-    canDelete: true,
-    canCreate: true,
-  },
+  routes,
+  settings,
 }: TableContainerProps) => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<Record<string, any>>({});
@@ -100,14 +90,14 @@ const TableContainer = ({
     let success = false;
     const promises: any[] = [];
 
-    console.log(Object.keys(checklist));
+    // console.log(Object.keys(checklist));
 
     Object.keys(checklist).forEach((key) => {
-      // promises.push(
-      //   onDelete(key, false).then((deleted) => {
-      //     success = success || deleted;
-      //   })
-      // );
+      promises.push(
+        onDelete(key, false).then((deleted) => {
+          success = success || deleted;
+        })
+      );
     });
 
     await Promise.all(promises);
@@ -135,10 +125,10 @@ const TableContainer = ({
         renderSummary={() => (
           <SummaryBlock
             modelLabel={modelLabel}
-            addRoute={addRoute}
+            addRoute={routes.create!}
             buttonLabel={`+ New ${modelLabel}`}
             itemCount={total}
-            showCreate={settings.canCreate}
+            showCreate={settings.canCreate || false}
           />
         )}
         renderFilterBlock={() => (
@@ -151,7 +141,6 @@ const TableContainer = ({
             toggleTableDensity={toggleDensity}
             onFilterApply={(filter) => {
               setFilter(filter);
-              console.log('apply filter');
             }}
           />
         )}
@@ -169,8 +158,16 @@ const TableContainer = ({
         renderActions={(item: Model) => (
           <>
             <Grid container justifyContent="flex-end" alignItems="flex-end">
+              {settings.canViewItem && (
+                <Link to={`${routes.view}/${item.id}`}>
+                  <Visibility
+                    fontSize="small"
+                    sx={{ mr: 1, fontSize: '15px' }}
+                  />
+                </Link>
+              )}
               {settings.canEdit && (
-                <Link to={`${editRoutePrefix}/${item.id}`}>
+                <Link to={`${routes.edit}/${item.id}`}>
                   <Edit fontSize="small" sx={{ mr: 1, fontSize: '15px' }} />
                 </Link>
               )}

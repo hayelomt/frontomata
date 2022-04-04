@@ -15,9 +15,9 @@ const RouteManager = () => {
         <Route
           path="/"
           element={
-            <PrivateRoute>
-              <HomePage />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <HomePage />
+            // </PrivateRoute>
           }
         />
         <Route

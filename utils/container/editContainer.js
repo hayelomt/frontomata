@@ -18,43 +18,20 @@ const getContainerImports = (modelName, corePrefix) => {
     [`${corePrefix}/../core/utils/ui/alert`]: ['toastError', 'toastMessage'],
     [`${corePrefix}/../core/utils/validation`]: ['parseValidationErrors'],
     [`${corePrefix}/../core/hooks/useFetchApiData`]: 'useFetchApiData',
-    [`${corePrefix}/../core/ui/utility/Loading`]: 'Loading',
+    [`${corePrefix}/../core/ui/utility/Loader`]: 'Loader',
     [`../${camelCase(modelName)}`]: [`${modelName}Edit`, modelName],
     [`../components/Edit${modelName}Form`]: `Edit${modelName}Form`,
     [`${corePrefix}/../core/ui/utility/ReturnButton`]: 'ReturnButton',
+    [`${corePrefix}/../core/utils/utility`]: ['parseFormQuery'],
   };
 };
 
 const mapInputData = (templateData) => {
-  if (containsFile(templateData)) {
-    const dateFields = getDateFields(templateData);
+  const dateFields = getDateFields(templateData);
 
-    if (dateFields.length) {
-      return `const formData: any = new FormData();
-    const dateFields: string[] = ${JSON.stringify(dateFields)}
-    Object.entries(values).forEach(([key, val]) => {
-      if (dateFields.includes(key)) {
-        formData.append(key, (val as Date).toISOString().substring(0, 10));
-      } else {
-        formData.append(key, val as Blob);
-      }
-    });`;
-    } else {
-      return `const formData: any = new FormData();
-    Object.entries(values).forEach(([key, val]) => {
-      formData.append(key, val as Blob);
-    });`;
-    }
-  } else {
-    return `const formData: any = { ...values };
-    const dateFields: string[] = ${JSON.stringify(getDateFields(templateData))};
-    dateFields.forEach((field) => {
-      if (formData[field]) {
-        formData[field] = formData[field].toISOString()
-        .substring(0, 10) as unknown as Date;
-      }
-    });`;
-  }
+  return `const formData: any = parseFormQuery(values, ${JSON.stringify(
+    dateFields
+  )})`;
 };
 
 const generateContainer = ({ data, modelName, endpoint, url }) => {
@@ -90,8 +67,6 @@ const generateContainer = ({ data, modelName, endpoint, url }) => {
     values: ${modelName}Edit,
     { setFieldError }: FormikHelpers<${modelName}Edit>
   ) => {
-    let success = false;
-
     ${mapInputData(data)}
 
     await callApi({
@@ -108,23 +83,20 @@ const generateContainer = ({ data, modelName, endpoint, url }) => {
       onSuccess: async (_) => {
         await fetch${modelName};
         toastMessage('${modelName} Edited');
-        success = true;
       },
     });
-
-    return success;
   };
-
-  if (loading || !${modelInstance}) return <Loading />;
 
   return (
     <Layout renderLeftToolbar={() => <ReturnButton to="${url}" />}>
-      <Grid sx={{ p: 2 }}>  
-        <Grid container sx={{ mb: 1, px: 1 }}>
-          <Typography variant="h5">Edit ${modelName}</Typography>
+      <Loader loading={loading || !${modelInstance}}>
+        <Grid sx={{ p: 2 }}>  
+          <Grid container sx={{ mb: 1, px: 1 }}>
+            <Typography variant="h5">Edit ${modelName}</Typography>
+          </Grid>
+          <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
         </Grid>
-        <Edit${modelName}Form ${modelInstance}={${modelInstance}!} onSubmit={handleSubmit} submitting={submitting} />
-      </Grid>
+      </Loader>
     </Layout>
   );
 };

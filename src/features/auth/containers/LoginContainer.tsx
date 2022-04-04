@@ -23,16 +23,19 @@ const LoginContainer = () => {
     values: LoginType,
     { setFieldError }: FormikHelpers<LoginType>
   ) => {
-    callApi({
+    let success = false;
+
+    await callApi({
       endpoint: `${constants.authUrl}/login`,
       data: values,
       onValidationError: (err) => parseValidationErrors(err, setFieldError),
       onError: toastError,
       onSuccess: async ({ data, token }: LoginResponse) => {
         saveUser!(data, token);
-        navigate('/login', { replace: true });
       },
     });
+
+    if (success) navigate('/login', { replace: true });
   };
 
   if (user !== null) return <Navigate to="/" />;

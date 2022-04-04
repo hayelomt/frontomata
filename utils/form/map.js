@@ -54,8 +54,8 @@ exports.importMap = {
     '@mui/material': ['Grid', 'Box'],
   },
   date: {
-    'react-datepicker': 'DatePicker',
-    '@mui/material': ['Grid', 'FormHelperText'],
+    'react-datetime-picker': 'DateTimePicker',
+    '@mui/material': ['Grid', 'FormHelperText', 'Typography'],
   },
   placeholder: {
     '@mui/material': ['Grid'],

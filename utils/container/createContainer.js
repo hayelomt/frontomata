@@ -11,7 +11,6 @@ const getContainerImports = (modelName, corePrefix, collectionType) => {
   const imports = {
     '@mui/material': ['Grid', 'Typography'],
     formik: ['FormikHelpers'],
-    'react-router-dom': ['useNavigate'],
     [`${corePrefix}/../core/ui/layout/Layout`]: 'Layout',
     [`${corePrefix}/../core/hooks/useSendApiData`]: ['useSendApiData'],
     [`${corePrefix}/../core/utils/ui/alert`]: ['toastError', 'toastMessage'],
@@ -22,47 +21,24 @@ const getContainerImports = (modelName, corePrefix, collectionType) => {
     ],
     [`../components/Create${modelName}Form`]: `Create${modelName}Form`,
     [`${corePrefix}/../core/ui/utility/ReturnButton`]: 'ReturnButton',
+    [`${corePrefix}/../core/utils/utility`]: ['parseFormQuery'],
   };
 
   if (!collectionType) {
     imports['react'] = ['useState', 'useEffect'];
     imports[`${corePrefix}/../core/hooks/useFetchApiData`] = 'useFetchApiData';
-    imports[`${corePrefix}/../core/ui/utility/Loading`] = 'Loading';
+    imports[`${corePrefix}/../core/ui/utility/Loader`] = 'Loader';
   }
 
   return imports;
 };
 
 const mapInputData = (templateData) => {
-  if (containsFile(templateData)) {
-    const dateFields = getDateFields(templateData);
+  const dateFields = getDateFields(templateData);
 
-    if (dateFields.length) {
-      return `const formData: any = new FormData();
-    const dateFields: string[] = ${JSON.stringify(dateFields)}
-    Object.entries(values).forEach(([key, val]) => {
-      if (dateFields.includes(key)) {
-        formData.append(key, (val as Date).toISOString().substring(0, 10));
-      } else {
-        formData.append(key, val as Blob);
-      }
-    });`;
-    } else {
-      return `const formData: any = new FormData();
-    Object.entries(values).forEach(([key, val]) => {
-      formData.append(key, val as Blob);
-    });`;
-    }
-  } else {
-    return `const formData: any = { ...values };
-    const dateFields: string[] = ${JSON.stringify(getDateFields(templateData))};
-    dateFields.forEach((field) => {
-      if (formData[field]) {
-        formData[field] = formData[field].toISOString()
-        .substring(0, 10) as unknown as Date;
-      }
-    });`;
-  }
+  return `const formData: any = parseFormQuery(values, ${JSON.stringify(
+    dateFields
+  )})`;
 };
 
 const generateContainer = ({
@@ -75,7 +51,6 @@ const generateContainer = ({
   const modelInstance = camelCase(modelName);
 
   return `const Create${modelName}Container = () => {
-  const navigate = useNavigate();
   const { callApi, loading: submitting } = useSendApiData();
   ${
     collectionType
@@ -120,18 +95,12 @@ const generateContainer = ({
       },
     });
 
-    if (success) navigate('/testimonies', { replace: true });
-
     return success;
   };
-  ${
-    collectionType
-      ? ''
-      : `if (loading || !${modelInstance}) return <Loading />;`
-  }
 
   return (
     <Layout renderLeftToolbar={() => <ReturnButton to="${url}" />}>
+      ${collectionType ? '' : `<Loader loading={loading}>`}
       <Grid sx={{ p: 2 }}>
         <Grid container sx={{ mb: 2, px: 1 }}>
           <Typography variant="h5">Add ${modelName}</Typography>
@@ -140,6 +109,7 @@ const generateContainer = ({
     collectionType ? '' : `${modelInstance}={${modelInstance}}`
   } onSubmit={handleSubmit} submitting={submitting} />
       </Grid>
+      ${collectionType ? '' : `</Loader>`}
     </Layout>
   );
 };

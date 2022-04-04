@@ -17,6 +17,8 @@ const getTypeEditInitializer = (name, type, subtype, modelInstance) => {
   if (getType(type, subtype) === 'Date')
     return `new Date(${modelInstance}.${name})`;
 
+  if (getType(type, subtype) === 'boolean') return `!!${modelInstance}.${name}`;
+
   return `${modelInstance}.${name}`;
 };
 
@@ -103,7 +105,7 @@ type ${modelName}Props = {
   onSubmit: (
     value: ${modelName}Edit,
     helpers: FormikHelpers<${modelName}Edit>
-  ) => Promise<boolean>;
+  ) => Promise<void>;
   submitting: boolean;
   ${modelInstance}: ${modelName};
 };
@@ -117,8 +119,7 @@ const Edit${modelName}Form = ({
     value: ${modelName}Edit,
     helpers: FormikHelpers<${modelName}Edit>
   ) => {
-    const success = await onSubmit(value, helpers);
-    if (success) formik.resetForm();
+    await onSubmit(value, helpers);
   };
 
   const initialValues: ${modelName}Edit =  {

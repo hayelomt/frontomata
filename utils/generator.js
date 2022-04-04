@@ -63,9 +63,9 @@ const generateCode = async (templateFile) => {
     writeCreateForm({
       data,
       modelName,
-      corePrefix,
       baseOutputFolder,
       collectionType,
+      url,
     });
     writeCreateContainer({
       data,

@@ -37,3 +37,22 @@ export const richTextModules = {
     ['link', 'image'],
   ],
 };
+
+export const parseFormQuery = (values: any, dateFields: string[] = []) => {
+  const formData: any = new FormData();
+
+  dateFields.forEach((field) => {
+    if (formData[field]) {
+      formData[field] = formData[field]
+        .toISOString()
+        .substring(0, 10) as unknown as Date;
+    }
+  });
+  Object.entries(values).forEach(([key, val]) => {
+    if (val) {
+      formData.append(key, val as Blob);
+    }
+  });
+
+  return formData;
+};
